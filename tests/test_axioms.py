@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from nose.tools import assert_equals, assert_raises, assert_raises_regexp
-
+from nose.tools import assert_equals
 from rootlisp.lisp import interpret
 
 class TestAxioms:

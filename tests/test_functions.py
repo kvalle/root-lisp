@@ -1,0 +1,20 @@
+# -*- coding: utf-8 -*-
+
+from nose.tools import assert_equals
+from rootlisp.lisp import interpret
+
+class TestFunctions:
+
+    def test_function_call(self):
+        assert_equals('(a b)', interpret("((lambda (x) (cons x '(b))) 'a)"))
+        assert_equals('(z b c)', interpret("""
+            ((lambda (x y) (cons x (cdr y)))
+                'z
+                '(a b c))
+        """))
+
+    def test_calling_argument_as_function(self):
+        assert_equals('(a b c)', interpret("""
+            ((lambda (f) (f '(b c)))
+                '(lambda (x) (cons 'a x)))
+        """))
