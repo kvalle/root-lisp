@@ -1,0 +1,49 @@
+# -*- coding: utf-8 -*-
+
+from nose.tools import assert_equals, assert_raises, assert_raises_regexp
+
+from rootlisp.lisp import interpret
+
+class TestAxioms:
+    """
+    Tests for each of the axioms.
+
+    Used more or less directly from "The Roots of Lisp" by Paul Graham
+    """
+
+    def test_quote(self):
+        assert_equals('a', interpret('(quote a)'))
+        assert_equals('a', interpret("'a"))
+        assert_equals('(a b c)', interpret("(quote (a b c))"))
+        assert_equals('(a b c)', interpret("'(a b c)"))
+
+    def test_atom(self):
+        assert_equals('t', interpret("(atom 'a)"))
+        assert_equals('()', interpret("(atom '(a b c))"))
+        assert_equals('t', interpret("(atom '())"))
+        assert_equals('t', interpret("(atom (atom 'a))"))
+        assert_equals('()', interpret("(atom '(atom 'a))"))
+
+    def test_eq(self):
+        assert_equals('t', interpret("(eq 'a 'a)"))
+        assert_equals('()', interpret("(eq 'a 'b)"))
+        assert_equals('t', interpret("(eq '() '())"))
+
+    def test_car(self):
+        assert_equals('a', interpret("(car '(a b c))"))
+
+    def test_cdr(self):
+        assert_equals('(b c)', interpret("(cdr '(a b c))"))
+
+    def test_cons(self):
+        assert_equals('(a b c)', interpret("(cons 'a '(b c))"))        
+        assert_equals('(a b c)', interpret("(cons 'a (cons 'b  (cons 'c '())))"))
+        assert_equals('a', interpret("(car (cons 'a '(b c)))"))
+        assert_equals('(b c)', interpret("(cdr (cons 'a '(b c)))"))
+
+    def test_cond(self):
+        lisp = """
+            (cond ((eq 'a 'b) 'first)
+                  ((atom 'a) 'second))
+        """
+        assert_equals('second', interpret(lisp))
