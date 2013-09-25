@@ -60,10 +60,21 @@ def eval_cond(exps, env):
             return eval_axiom(e, env)
 
 def eval_function_call(exps, env):
-    if isa(exps[0], str):
-        (_, params, body) = eval_var(exps[0], env)
-    else: 
-        (_, params, body) = exps[0]
+    "Clean me up and comment"
+    new_env = env
+    fn = exps[0]
+
+    # (f args)
+    if isa(fn, str):
+        fn = eval_var(fn, env)
+
+    # ((label f (lambda ...) args))
+    if fn[0] == "label":
+        new_env = [(fn[1], fn)] + new_env
+        fn = fn[2]
+
+    (_, params, body) = fn
     args = [eval_axiom(e, env) for e in exps[1:]]
-    new_env = zip(params, args) + env
+    new_env = zip(params, args) + new_env
+
     return eval_axiom(body, new_env)

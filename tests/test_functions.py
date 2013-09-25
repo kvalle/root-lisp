@@ -18,3 +18,16 @@ class TestFunctions:
             ((lambda (f) (f '(b c)))
                 '(lambda (x) (cons 'a x)))
         """))
+
+    def test_recursive_function_with_label(self):
+        assert_equals('(a m (a m c) d)', interpret("""
+            ((label subst (lambda (x y z)
+                            (cond ((atom z)
+                                   (cond ((eq z y) x)
+                                         ('t z)))
+                                  ('t (cons (subst x y (car z))
+                                            (subst x y (cdr z)))))))
+                'm
+                'b
+                '(a b (a b c) d))
+        """))
