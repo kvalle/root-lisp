@@ -27,11 +27,3 @@ def repl():
             return
         except Exception, e:
             print "! %s" % e
-
-if __name__ == '__main__':
-    from sys import argv
-    if len(argv) < 2:
-        repl()
-    else:
-        result = interpret_file(argv[1], [])
-        print unparse(result)
