@@ -14,9 +14,31 @@ def unparse(ast):
         return str(ast)
 
 def parse(source):
-    "Creates an Abstract Syntax Tree (AST) from program source (as string)"
+    """Creates an Abstract Syntax Tree (AST) from program source 
+    constituting one expression"""
     source = expand_quote_ticks(source)
     return analyze(tokenize(source))
+
+def parse_multiple(source):
+    """Creates a list of ASTs from program source 
+    constituting multiple expressions"""
+    source = expand_quote_ticks(source)
+    exps = []
+    while source.strip():
+        (exp, source) = read_one_exp(source)
+        exps.append(exp)
+    return [analyze(tokenize(exp)) for exp in exps]
+
+def read_one_exp(source):
+    """Reads one expression from lisp source
+    Returns touple of (exp, rest_of_source)"""
+    source = source.strip()
+    open_parens = 0
+    for i, char in enumerate(source):
+        if char == "(": open_parens += 1
+        if char == ")": open_parens -= 1
+        if open_parens <= 0:
+            return (source[:i+1], source[i+1:])
 
 def expand_quoted_symbol(source):
     # match anything with a tick (`',) followed by at least one character

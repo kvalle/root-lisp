@@ -58,7 +58,6 @@ def eval_defun(name, params, body, env):
     return "t"
 
 def apply_fn(fn, args, env):
-    "Clean me up and comment"
     new_env = env
 
     # (f args)

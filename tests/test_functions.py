@@ -32,7 +32,6 @@ class TestFunctions:
                 '(a b (a b c) d))
         """))
 
-
     def test_simple_defun(self):
         env = []
         interpret("(defun foo (x y z) (cons x (cons y (cons z '()))))", env)

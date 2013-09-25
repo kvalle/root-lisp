@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from parser import parse, unparse
+from parser import parse, parse_multiple, unparse
 from core import eval_axiom
 
 def interpret(exp, env=None):
@@ -8,6 +8,14 @@ def interpret(exp, env=None):
     ast = parse(exp)
     exp = eval_axiom(ast, env if env is not None else [])
     return unparse(exp)
+
+def interpret_file(filename, env):
+    """Interpret a list source file, returning value of last expression"""
+    with open(filename, 'r') as f:
+        source = f.read()
+    asts = parse_multiple(source)
+    results = [eval_axiom(ast, env) for ast in asts]
+    return results[-1]
 
 def repl():
     """A very simple REPL"""
@@ -21,4 +29,9 @@ def repl():
             print "! %s" % e
 
 if __name__ == '__main__':
-    repl()
+    from sys import argv
+    if len(argv) < 2:
+        repl()
+    else:
+        result = interpret_file(argv[1], [])
+        print unparse(result)
