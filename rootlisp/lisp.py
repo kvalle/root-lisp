@@ -4,10 +4,10 @@ from parser import parse, unparse
 
 isa = isinstance
 
-def interpret(exp):
+def interpret(exp, env=None):
     """Interpret a Lisp expression"""
     ast = parse(exp)
-    exp = eval_axiom(ast, [])
+    exp = eval_axiom(ast, env if env is not None else [])
     return unparse(exp)
 
 def eval_axiom(ast, env):
@@ -20,7 +20,7 @@ def eval_axiom(ast, env):
     elif ast[0] == "cdr":    return eval_cdr(ast[1], env)
     elif ast[0] == "cons":   return eval_cons(ast[1], ast[2], env)
     elif ast[0] == "cond":   return eval_cond(ast[1:], env)
-    else: return eval_function_call(ast, env)
+    else: return apply_fn(ast[0], ast[1:], env)
 
 def eval_var(var, env):
     for x, value in env:
@@ -59,10 +59,9 @@ def eval_cond(exps, env):
         if eval_axiom(p, env):
             return eval_axiom(e, env)
 
-def eval_function_call(exps, env):
+def apply_fn(fn, args, env):
     "Clean me up and comment"
     new_env = env
-    fn = exps[0]
 
     # (f args)
     if isa(fn, str):
@@ -74,7 +73,7 @@ def eval_function_call(exps, env):
         fn = fn[2]
 
     (_, params, body) = fn
-    args = [eval_axiom(e, env) for e in exps[1:]]
+    args = [eval_axiom(e, env) for e in args]
     new_env = zip(params, args) + new_env
 
     return eval_axiom(body, new_env)
