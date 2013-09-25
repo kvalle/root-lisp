@@ -20,6 +20,7 @@ def eval_axiom(ast, env):
     elif ast[0] == "cdr":    return eval_cdr(ast[1], env)
     elif ast[0] == "cons":   return eval_cons(ast[1], ast[2], env)
     elif ast[0] == "cond":   return eval_cond(ast[1:], env)
+    elif ast[0] == "defun":  return eval_defun(ast[1], ast[2], ast[3], env)
     else: return apply_fn(ast[0], ast[1:], env)
 
 def eval_var(var, env):
@@ -58,6 +59,11 @@ def eval_cond(exps, env):
     for p, e in exps:
         if eval_axiom(p, env):
             return eval_axiom(e, env)
+
+def eval_defun(name, params, body, env):
+    label = ["label", name, ["lambda", params, body]]
+    env.insert(0, (name, label))
+    return label
 
 def apply_fn(fn, args, env):
     "Clean me up and comment"

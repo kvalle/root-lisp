@@ -31,3 +31,21 @@ class TestFunctions:
                 'b
                 '(a b (a b c) d))
         """))
+
+
+    def test_simple_defun(self):
+        env = []
+        interpret("(defun foo (x y z) (cons x (cons y (cons z '()))))", env)
+        assert_equals('(a b c)', interpret("(foo 'a 'b 'c)", env))
+
+    def test_recursive_function_with_defun(self):
+        env = []
+        interpret("""
+            (defun subst (x y z) 
+                (cond ((atom z)
+                       (cond ((eq z y) x)
+                             ('t z)))
+                      ('t (cons (subst x y (car z))
+                                (subst x y (cdr z))))))
+        """, env)
+        assert_equals('(a m (a m c) d)', interpret("(subst 'm 'b '(a b (a b c) d))", env))

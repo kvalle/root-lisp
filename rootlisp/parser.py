@@ -87,7 +87,7 @@ def analyze(tokens):
 
 def _read_elem(tokens):
     if len(tokens) == 0:
-        raise SyntaxError("Unexpected EOF")
+        raise SyntaxError("Unexpected EOF before closing paren")
     if tokens[0] == "(":
         return _read_list(tokens[1:])
     else:
