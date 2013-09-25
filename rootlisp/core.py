@@ -58,19 +58,16 @@ def eval_defun(name, params, body, env):
     return "t"
 
 def apply_fn(fn, args, env):
-    new_env = env
-
     # (f args)
     if isa(fn, str):
         fn = eval_var(fn, env)
 
     # ((label f (lambda ...) args))
     if fn[0] == "label":
-        new_env = [(fn[1], fn)] + new_env
+        env = [(fn[1], fn)] + env
         fn = fn[2]
 
     (_, params, body) = fn
     args = [eval_axiom(e, env) for e in args]
-    new_env = zip(params, args) + new_env
-
-    return eval_axiom(body, new_env)
+    env = zip(params, args) + env
+    return eval_axiom(body, env)
