@@ -17,9 +17,9 @@ def interpret_file(filename, env):
     results = [eval(ast, env) for ast in asts]
     return results[-1]
 
-def repl():
+def repl(env=None):
     """A very simple REPL"""
-    env = []
+    env = [] if env is None else env
     while True:
         try:
             print interpret(raw_input("> "), env)
