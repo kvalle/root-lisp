@@ -1,73 +1,76 @@
 # -*- coding: utf-8 -*-
 
-isa = isinstance
+def is_atom(e): 
+    return isinstance(e, str)
 
-def eval_axiom(ast, env):
+def eval(e, a):
     """Function for evaluating the basic axioms"""
-    if isa(ast, str):        return eval_var(ast, env)
-    elif ast[0] == "quote":  return ast[1]
-    elif ast[0] == "atom":   return eval_atom(ast[1], env)
-    elif ast[0] == "eq":     return eval_eq(ast[1], ast[2], env)
-    elif ast[0] == "car":    return eval_car(ast[1], env)
-    elif ast[0] == "cdr":    return eval_cdr(ast[1], env)
-    elif ast[0] == "cons":   return eval_cons(ast[1], ast[2], env)
-    elif ast[0] == "cond":   return eval_cond(ast[1:], env)
-    elif ast[0] == "defun":  return eval_defun(ast[1], ast[2], ast[3], env)
-    else: return apply_fn(ast[0], ast[1:], env)
+    if is_atom(e): return lookup(e, a)
+    elif is_atom(e[0]):
+        if e[0] == "quote": return quote(e)
+        elif e[0] == "atom": return atom(e, a)
+        elif e[0] == "eq": return eq(e, a)
+        elif e[0] == "car": return car(e, a)
+        elif e[0] == "cdr": return cdr(e, a)
+        elif e[0] == "cons": return cons(e, a)
+        elif e[0] == "cond": return cond(e, a)
+        elif e[0] == "defun": return defun(e, a)
+        else: return call_named_fn(e, a)
+    elif e[0][0] == "label": return label(e, a)
+    elif e[0][0] == "lambda": return apply(e, a)
 
-def eval_var(var, env):
-    for x, value in env:
-        if x == var:
+def lookup(e, a):
+    for x, value in a:
+        if x == e:
             return value
-    raise LookupError("%s is unbound" % var)
+    raise LookupError("%s is unbound" % e)
 
-def eval_atom(x, env):
-    x = eval_axiom(x, env)
-    if isa(x, str) or x == []:
+def quote(e):
+    return e[1]
+
+def atom(e, a):
+    a = eval(e[1], a)
+    return 't' if a == [] or is_atom(a) else []
+
+def eq(e, a):
+    a, b = eval(e[1], a), eval(e[2], a)
+    if a == b and (is_atom(a) or a == []):
         return 't'
     else:
         return []
 
-def eval_eq(a, b, env):
-    a = eval_axiom(a, env)
-    b = eval_axiom(b, env)
-    if [] == a == b:
-        return 't'
-    elif isa(a, str) and isa(b, str) and a == b:
-        return 't'
-    else:
-        return []
+def car(e, a):
+    return eval(e[1], a)[0]
 
-def eval_car(lst, env):
-    return eval_axiom(lst, env)[0]
+def cdr(e, a):
+    return eval(e[1], a)[1:]
 
-def eval_cdr(lst, env):
-    return eval_axiom(lst, env)[1:]
+def cons(e, a):
+    return [eval(e[1], a)] + eval(e[2], a)
 
-def eval_cons(a, b, env):
-    return [eval_axiom(a, env)] + eval_axiom(b, env)
+def cond(e, a):
+    for p, e in e[1:]:
+        if eval(p, a):
+            return eval(e, a)
 
-def eval_cond(exps, env):
-    for p, e in exps:
-        if eval_axiom(p, env):
-            return eval_axiom(e, env)
-
-def eval_defun(name, params, body, env):
+def defun(e, a):
+    name, params, body = e[1], e[2], e[3]
     label = ["label", name, ["lambda", params, body]]
-    env.insert(0, (name, label))
-    return "t"
+    a.insert(0, (name, label))
+    return name
 
-def apply_fn(fn, args, env):
-    # (f args)
-    if isa(fn, str):
-        fn = eval_var(fn, env)
+def call_named_fn(e, a):
+    fn = lookup(e[0], a)
+    return eval([fn] + e[1:], a)
 
-    # ((label f (lambda ...) args))
-    if fn[0] == "label":
-        env = [(fn[1], fn)] + env
-        fn = fn[2]
+def label(e, a):
+    _, f, fn = e[0]
+    args = e[1:]
+    return eval([fn] + args, [(f, e[0])] + a)
 
-    (_, params, body) = fn
-    args = [eval_axiom(e, env) for e in args]
-    env = zip(params, args) + env
-    return eval_axiom(body, env)
+def apply(e, a):
+    fn, args = e[0], e[1:]
+    _, params, body = fn
+    evaluated_args = map(lambda e: eval(e, a), args)
+    a = zip(params, evaluated_args) + a
+    return eval(body, a)

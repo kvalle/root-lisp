@@ -27,7 +27,7 @@ def parse_multiple(source):
     while source.strip():
         (exp, source) = read_one_exp(source)
         exps.append(exp)
-    return [analyze(tokenize(exp)) for exp in exps]
+    return [analyze(tokenize(e)) for e in exps]
 
 def read_one_exp(source):
     """Reads one expression from lisp source
@@ -38,7 +38,7 @@ def read_one_exp(source):
         if char == "(": open_parens += 1
         if char == ")": open_parens -= 1
         if open_parens <= 0:
-            return (source[:i+1], source[i+1:])
+            return (source[:i + 1], source[i + 1:])
 
 def expand_quoted_symbol(source):
     # match anything with a tick (`',) followed by at least one character
