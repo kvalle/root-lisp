@@ -10,11 +10,11 @@
     (eq x '()))
 
 (defun and (x y)
-    (cond (x (cond (y 't) ('t '())))
-          ('t '())))
+    (cond (x (cond (y 't) ('t 'f)))
+          ('t 'f)))
 
 (defun not (x)
-    (cond (x '())
+    (cond (x 'f)
           ('t 't)))
 
 (defun append (x y)

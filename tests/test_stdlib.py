@@ -10,15 +10,15 @@ class TestStdlib:
         interpret_file("stdlib.lisp", self.env)
 
     def test_null(self):
-        assert_equals('()', interpret("(null 'a)", self.env))
+        assert_equals('f', interpret("(null 'a)", self.env))
         assert_equals('t', interpret("(null '())", self.env))
 
     def test_and(self):
         assert_equals('t', interpret("(and (atom 'a) (eq 'a 'a))", self.env))
-        assert_equals('()', interpret("(and (atom 'a) (eq 'a 'b))", self.env))
+        assert_equals('f', interpret("(and (atom 'a) (eq 'a 'b))", self.env))
 
     def test_not(self):
-        assert_equals('()', interpret("(not (eq 'a 'a))", self.env))
+        assert_equals('f', interpret("(not (eq 'a 'a))", self.env))
         assert_equals('t', interpret("(not (eq 'a 'b))", self.env))
 
     def test_append(self):

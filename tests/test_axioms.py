@@ -18,14 +18,14 @@ class TestAxioms:
 
     def test_atom(self):
         assert_equals('t', interpret("(atom 'a)"))
-        assert_equals('()', interpret("(atom '(a b c))"))
+        assert_equals('f', interpret("(atom '(a b c))"))
         assert_equals('t', interpret("(atom '())"))
         assert_equals('t', interpret("(atom (atom 'a))"))
-        assert_equals('()', interpret("(atom '(atom 'a))"))
+        assert_equals('f', interpret("(atom '(atom 'a))"))
 
     def test_eq(self):
         assert_equals('t', interpret("(eq 'a 'a)"))
-        assert_equals('()', interpret("(eq 'a 'b)"))
+        assert_equals('f', interpret("(eq 'a 'b)"))
         assert_equals('t', interpret("(eq '() '())"))
 
     def test_car(self):

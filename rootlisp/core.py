@@ -30,14 +30,14 @@ def quote(e):
 
 def atom(e, a):
     a = eval(e[1], a)
-    return 't' if a == [] or is_atom(a) else []
+    return 't' if a == [] or is_atom(a) else 'f'
 
 def eq(e, a):
     a, b = eval(e[1], a), eval(e[2], a)
     if a == b and (is_atom(a) or a == []):
         return 't'
     else:
-        return []
+        return 'f'
 
 def car(e, a):
     return eval(e[1], a)[0]
@@ -50,7 +50,7 @@ def cons(e, a):
 
 def cond(e, a):
     for p, e in e[1:]:
-        if eval(p, a):
+        if eval(p, a) == 't':
             return eval(e, a)
 
 def defun(e, a):
