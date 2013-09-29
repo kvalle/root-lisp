@@ -52,7 +52,7 @@ def partition_exp(source):
         return "'" + exp, rest
     elif source[0] == "(":
         last = find_matching_paren(source)
-        return source[:last+1], source[last+1:]
+        return source[:last + 1], source[last + 1:]
     else:
         match = re.match(r"^[^\s)']+", source)
         end = match.end()

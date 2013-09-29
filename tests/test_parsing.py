@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from nose.tools import assert_equals, assert_raises, assert_raises_regexp
-
 from rootlisp.parser import parse, unparse, find_matching_paren
-
-import unittest
 
 class TestParsing:
 

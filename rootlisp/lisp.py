@@ -5,16 +5,15 @@ from core import eval
 
 def interpret(exp, env=None):
     """Interpret a single Lisp expression"""
-    ast = parse(exp)
-    exp = eval(ast, env if env is not None else [])
+    exp = eval(parse(exp), env if env is not None else [])
     return unparse(exp)
 
 def interpret_file(filename, env):
     """Interpret a list source file, returning the value of the last expression"""
     with open(filename, 'r') as f:
         source = f.read()
-    asts = parse_multiple(source)
-    results = [eval(ast, env) for ast in asts]
+    results = [eval(ast, env) for ast in 
+                parse_multiple(source)]
     return results[-1]
 
 def repl(env=None):
