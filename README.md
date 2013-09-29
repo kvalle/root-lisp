@@ -5,13 +5,13 @@ Root Lisp is a Lisp, as originally described by John McCarthy, implemented in Py
 [rec-func]: http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.111.8833&rep=rep1&type=pdf
 [roots]: http://www.paulgraham.com/rootsoflisp.html
 
-Just like the original this is a small, although neat, language with a lot of bells a whistles missing. It has no side effects (no IO), no types other than atoms (e.g. no numbers, strings, etc), and dynamic rather than lexical scoping.
+Just like the original this is a small, although neat, language with a lot of bells a whistles missing. It has no side effects (no IO), no types other than atoms (e.g. no numbers, strings, etc), no error handling (programs are expeted to be expressed correctly), and dynamic rather than lexical scoping.
 
 ### Differences from McCarthys original
 
 This language differs from the original Lisp in some minor regards.
 
-- Atoms can be written in lower case letters and special characters (except single quote `'` and parentheses), in addition to the originals CAPS ONLY atoms. 
+- Atoms can be written in lower case letters and with special characters (except single quote `'` and parentheses), in addition to the originals CAPS ONLY atoms. 
 - Atoms cannot contain spaces, thus elminating the need for dotted pair notations or commas within lists.
 - Quoting can be done using single quote tick (e.g. `'(a quoted list)` instead of `(quote a quoted list)`) in order to improve readability of programs a bit.
 

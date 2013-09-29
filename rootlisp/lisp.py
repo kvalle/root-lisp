@@ -10,7 +10,7 @@ def interpret(exp, env=None):
     return unparse(exp)
 
 def interpret_file(filename, env):
-    """Interpret a list source file, returning value of last expression"""
+    """Interpret a list source file, returning the value of the last expression"""
     with open(filename, 'r') as f:
         source = f.read()
     asts = parse_multiple(source)

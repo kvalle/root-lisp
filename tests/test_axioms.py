@@ -10,6 +10,9 @@ class TestAxioms:
     Used more or less directly from "The Roots of Lisp" by Paul Graham
     """
 
+    def test_evaluating_atoms(self):
+        assert_equals('foo', interpret('a', [('a', 'foo')]))
+
     def test_quote(self):
         assert_equals('a', interpret('(quote a)'))
         assert_equals('a', interpret("'a"))

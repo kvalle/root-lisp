@@ -16,8 +16,8 @@ def eval(e, a):
         elif e[0] == "cond": return cond(e, a)
         elif e[0] == "defun": return defun(e, a)
         else: return call_named_fn(e, a)
-    elif e[0][0] == "label": return label(e, a)
     elif e[0][0] == "lambda": return apply(e, a)
+    elif e[0][0] == "label": return label(e, a)
 
 def lookup(e, a):
     for x, value in a:
