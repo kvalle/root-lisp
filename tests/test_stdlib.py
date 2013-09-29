@@ -25,9 +25,9 @@ class TestStdlib:
         assert_equals('(a b c d)', interpret("(append '(a b) '(c d))", self.env))
         assert_equals('(c d)', interpret("(append 'nil '(c d))", self.env))
 
-    def test_pair(self):
+    def test_zip(self):
         assert_equals('((x a) (y b) (z c))', 
-            interpret("(pair '(x y z) '(a b c))", self.env))
+            interpret("(zip '(x y z) '(a b c))", self.env))
 
     def test_assoc(self):
         assert_equals('a', interpret("(assoc 'x '((x a) (y b)))", self.env))

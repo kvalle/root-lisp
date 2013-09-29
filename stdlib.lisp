@@ -24,11 +24,11 @@
 (defun list (x y)
   (cons x (cons y 'nil)))
 
-(defun pair (x y)
+(defun zip (x y)
   (cond ((and (null x) (null y)) 'nil)
         ((and (not (atom x)) (not (atom y)))
          (cons (list (car x) (car y))
-               (pair (cdr x) (cdr y))))))
+               (zip (cdr x) (cdr y))))))
 
 (defun assoc (x y)
   (cond ((eq (caar y) x) (cadar y))
@@ -56,7 +56,7 @@
             (cons (list (cadar e) (car e)) a)))
     ((eq (caar e) 'lambda)
      (eval (caddar e)
-            (append (pair (cadar e) (evlis (cdr e) a))
+            (append (zip (cadar e) (evlis (cdr e) a))
                      a)))))
 
 (defun evcon (c a)

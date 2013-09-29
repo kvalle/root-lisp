@@ -29,12 +29,12 @@ def quote(e):
     return e[1]
 
 def atom(e, a):
-    a = eval(e[1], a)
-    return 't' if is_atom(a) else 'f'
+    val = eval(e[1], a)
+    return 't' if is_atom(val) else 'f'
 
 def eq(e, a):
-    a, b = eval(e[1], a), eval(e[2], a)
-    return 't' if a == b and is_atom(a) else 'f'
+    v1, v2 = eval(e[1], a), eval(e[2], a)
+    return 't' if v1 == v2 and is_atom(v1) else 'f'
 
 def car(e, a):
     return eval(e[1], a)[0]

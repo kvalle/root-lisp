@@ -36,9 +36,11 @@ class TestAxioms:
 
     def test_cdr(self):
         assert_equals('(b c)', interpret("(cdr '(a b c))"))
+        assert_equals('nil', interpret("(cdr '(a))"))
 
     def test_cons(self):
-        assert_equals('(a b c)', interpret("(cons 'a '(b c))"))        
+        assert_equals('(a b c)', interpret("(cons 'a '(b c))"))
+        assert_equals('(a)', interpret("(cons 'a 'nil)"))
         assert_equals('(a b c)', interpret("(cons 'a (cons 'b  (cons 'c 'nil)))"))
         assert_equals('a', interpret("(car (cons 'a '(b c)))"))
         assert_equals('(b c)', interpret("(cdr (cons 'a '(b c)))"))

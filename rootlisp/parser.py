@@ -5,12 +5,10 @@ import re
 def unparse(ast):
     """Convert an AST back into the corresponding lisp expression"""
     if isinstance(ast, str): return ast
-    elif ast == []: return "()"
+    elif len(ast) > 0 and ast[0] == "quote":
+        return "'%s" % unparse(ast[1])
     else:
-        if ast[0] == "quote":
-            return "'%s" % unparse(ast[1])
-        else:
-            return "(%s)" % " ".join([unparse(x) for x in ast])
+        return "(%s)" % " ".join([unparse(x) for x in ast])
 
 def parse(source):
     """Parse string representation of one single expression
@@ -18,8 +16,7 @@ def parse(source):
     exp, rest = partition_exp(source)
     if rest:
         raise SyntaxError('Expected EOF')
-
-    if exp[0] == "'":
+    elif exp[0] == "'":
         return ["quote", parse(exp[1:])]
     elif exp[0] == "(":
         end = find_matching_paren(exp)

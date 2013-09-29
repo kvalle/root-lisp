@@ -34,8 +34,11 @@ class TestFunctions:
 
     def test_simple_defun(self):
         env = []
-        interpret("(defun foo (x y z) (cons x (cons y (cons z 'nil))))", env)
-        assert_equals('(a b c)', interpret("(foo 'a 'b 'c)", env))
+        interpret("""
+            (defun triple (x y z) 
+                (cons x (cons y (cons z 'nil))))
+        """, env)
+        assert_equals('(a b c)', interpret("(triple 'a 'b 'c)", env))
 
     def test_recursive_function_with_defun(self):
         env = []
