@@ -3,79 +3,65 @@
 import re
 
 def unparse(ast):
-    if ast == []:
-        return "()"
-    elif isinstance(ast, list):
+    """Convert an AST back into the corresponding lisp expression"""
+    if isinstance(ast, str): return ast
+    elif ast == []: return "()"
+    else:
         if ast[0] == "quote":
             return "'%s" % unparse(ast[1])
         else:
             return "(%s)" % " ".join([unparse(x) for x in ast])
-    else:
-        return str(ast)
 
 def parse(source):
-    """Creates an Abstract Syntax Tree (AST) from program source 
-    constituting one expression"""
-    source = expand_quote_ticks(source)
-    return analyze(tokenize(source))
+    """Parse string representation of one single expression
+    into the corresponding Abstract Syntax Tree"""
+    exp, rest = partition_exp(source)
+    if rest:
+        raise SyntaxError('Expected EOF')
+
+    if exp[0] == "'":
+        return ["quote", parse(exp[1:])]
+    elif exp[0] == "(":
+        end = find_matching_paren(exp)
+        return [parse(e) for e in split_exps(exp[1:end])]
+    else:
+        return exp
 
 def parse_multiple(source):
     """Creates a list of ASTs from program source 
     constituting multiple expressions"""
-    source = expand_quote_ticks(source)
+    return [parse(exp) for exp in split_exps(source)]
+
+def split_exps(source):
+    """Splits a source string into subexpressions 
+    that can be parsed individually"""
+    rest = source.strip()
     exps = []
-    while source.strip():
-        (exp, source) = read_one_exp(source)
+    while rest:
+        exp, rest = partition_exp(rest)
         exps.append(exp)
-    return [analyze(tokenize(e)) for e in exps]
+    return exps
 
-def read_one_exp(source):
-    """Reads one expression from lisp source
-    Returns touple of (exp, rest_of_source)"""
+def partition_exp(source):
+    """Split string into (exp, rest) where exp is the 
+    first expression in the string and rest is the 
+    rest of the string after this expression."""
     source = source.strip()
-    open_parens = 0
-    for i, char in enumerate(source):
-        if char == "(": open_parens += 1
-        if char == ")": open_parens -= 1
-        if open_parens <= 0:
-            return (source[:i + 1], source[i + 1:])
+    if source[0] == "'":
+        exp, rest = partition_exp(source[1:])
+        return "'" + exp, rest
+    elif source[0] == "(":
+        last = find_matching_paren(source)
+        return source[:last+1], source[last+1:]
+    else:
+        match = re.match(r"^[^\s)']+", source)
+        end = match.end()
+        atom = source[:end]
+        return atom, source[end:]
 
-def expand_quoted_symbol(source):
-    # match anything with a tick (`',) followed by at least one character
-    # that is not whitespace, a paren or another tick
-    match = re.search(r"'([^'\(\s]+)", source)
-    if match:
-        start, end = match.span()
-        source = "%(pre)s(quote %(quoted)s)%(post)s" % {
-            "pre": source[:start], 
-            "quoted": match.group(1), 
-            "post": source[end:]
-        }
-    return source
-
-def expand_quoted_list(source):
-    # match any tick followed directly by an opening parenthesis
-    match = re.search(r"'\(", source)
-    if match:
-        start = match.start()
-        end = find_matching_paren(source, start + 1)
-        source = "%(pre)s(quote %(quoted)s)%(post)s" % {
-            "pre": source[:start],
-            "quoted": source[start + 1:end],
-            "post": source[end:] 
-        }
-    return source
-
-def expand_quote_ticks(source):
-    while "'" in source:
-        source = expand_quoted_symbol(source)
-        source = expand_quoted_list(source)
-    return source
-
-def find_matching_paren(source, start):
+def find_matching_paren(source, start=0):
     """Given a string and the index of an opening parenthesis, determine 
     the index of the matching closing paren"""
-
     assert source[start] == '('
     pos = start
     open_brackets = 1
@@ -88,38 +74,3 @@ def find_matching_paren(source, start):
         if source[pos] == ')':
             open_brackets -= 1
     return pos
-
-def tokenize(source):
-    "Create list of tokens from (preprocessed) program source"
-    return source.replace("(", " ( ").replace(")", " ) ").split()
-
-def untokenize(tokens):
-    return " ".join(tokens).replace("( ", "(").replace(" )", ")")
-
-def analyze(tokens):
-    """Transform list of token to AST
-
-    Expects the tokens to constitute *one* single full AST.
-    Throws an error otherwise.
-    """
-    sexp, rest = _read_elem(tokens)
-    if len(rest) > 0:
-        raise SyntaxError("Expected EOF got '%s'" % untokenize(rest))
-    return sexp
-
-def _read_elem(tokens):
-    if len(tokens) == 0:
-        raise SyntaxError("Unexpected EOF before closing paren")
-    if tokens[0] == "(":
-        return _read_list(tokens[1:])
-    else:
-        return (tokens[0], tokens[1:])
-
-def _read_list(tokens):
-    res = []
-    while True:
-        el, tokens = _read_elem(tokens)
-        if el == ")": 
-            break
-        res.append(el)
-    return res, tokens

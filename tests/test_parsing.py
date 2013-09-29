@@ -2,26 +2,27 @@
 
 from nose.tools import assert_equals, assert_raises, assert_raises_regexp
 
-from rootlisp.parser import tokenize, parse, unparse, expand_quote_ticks, \
-    find_matching_paren, expand_quoted_symbol, expand_quoted_list
+from rootlisp.parser import parse, unparse, find_matching_paren
+
+import unittest
 
 class TestParsing:
 
     ## Basic parsing
 
-    def test_tokenize_single_atom(self):
-        assert_equals(['foo'], tokenize('foo'))
+    def test_parse_single_atom(self):
+        assert_equals('foo', parse('foo'))
 
-    def test_tokenize_list(self):
+    def test_parse_simple_list(self):
         source = '(foo 1 2)'
-        tokens = ['(', 'foo', '1', '2', ')']
-        assert_equals(tokens, tokenize(source))
+        tokens = ['foo', '1', '2']
+        assert_equals(tokens, parse(source))
 
     def test_parse_on_simple_list(self):
         program = '(foo bar)'
         assert_equals(['foo', 'bar'], parse(program))
 
-    def test_parse_on_tested_list(self):
+    def test_parse_on_nested_list(self):
         program = '(foo (bar x y) (baz x))'
         ast = ['foo', 
                 ['bar', 'x', 'y'], 
@@ -31,9 +32,9 @@ class TestParsing:
     ## Tests for parsing bad expressions
 
     def test_parse_exception_missing_paren(self):
-        with assert_raises_regexp(SyntaxError, 'Unexpected EOF'):
+        with assert_raises_regexp(SyntaxError, 'Unbalanced expression'):
             parse('(foo (bar x y)')
-
+    
     def test_parse_exception_extra_paren(self):
         with assert_raises_regexp(SyntaxError, 'Expected EOF'):
             parse('(foo (bar x y)))')
@@ -64,17 +65,13 @@ class TestParsing:
     ## Tests for expanding quoted symbols
 
     def test_expand_single_quoted_symbol(self):
-        assert_equals("(foo (quote bar))", expand_quoted_symbol("(foo 'bar)"))
-        assert_equals("(foo (quote #t))", expand_quoted_symbol("(foo '#t)"))
-        assert_equals("(foo (quote +))", expand_quoted_symbol("(foo '+)"))
-
-    def test_expand_quoted_symbol_dont_touch_nested_quote_on_list(self):
-        source = "(foo ''(bar))"
-        assert_equals(source, expand_quoted_symbol(source))
+        assert_equals(["foo", ["quote", "bar"]], parse("(foo 'bar)"))
+        assert_equals(["foo", ["quote", "t"]], parse("(foo 't)"))
+        assert_equals(["foo", ["quote", "+"]], parse("(foo '+)"))
 
     def test_expand_quotes_with_only_symbols(self):
-        assert_equals("(quote foo)", expand_quote_ticks("'foo"))
-        assert_equals("(quote (quote (quote foo)))", expand_quote_ticks("'''foo"))
+        assert_equals(["quote", "foo"], parse("'foo"))
+        assert_equals(["quote", ["quote", ["quote", "foo"]]], parse("'''foo"))
 
     def test_parse_quote_tick_on_atom(self):
         assert_equals(["quote", "foo"], parse("'foo"))
@@ -88,13 +85,13 @@ class TestParsing:
     ## Tests for expanding quoted lists
 
     def test_expand_single_quoted_list(self):
-        assert_equals("(foo (quote (+ 1 2)))", expand_quoted_list("(foo '(+ 1 2))"))
-        assert_equals("(foo (quote (#t #f)))", expand_quoted_list("(foo '(#t #f))"))
+        assert_equals(["foo", ["quote", ["+", "1", "2"]]], parse("(foo '(+ 1 2))"))
+        assert_equals(["foo", ["quote", ["#t", "#f"]]], parse("(foo '(#t #f))"))
 
     def test_expand_quotes_with_lists(self):
-        assert_equals("(quote (foo bar))", expand_quote_ticks("'(foo bar)"))
-        assert_equals("(quote (quote (quote (foo bar))))", 
-            expand_quote_ticks("'''(foo bar)"))
+        assert_equals(["quote", ["foo", "bar"]], parse("'(foo bar)"))
+        assert_equals(["quote", ["quote", ["quote", ["foo", "bar"]]]], 
+            parse("'''(foo bar)"))
 
     def test_parse_quote_tick_on_list(self):
         assert_equals(["quote", ["foo", "bar"]], parse("'(foo bar)"))
