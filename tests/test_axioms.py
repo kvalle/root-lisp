@@ -22,14 +22,14 @@ class TestAxioms:
     def test_atom(self):
         assert_equals('t', interpret("(atom 'a)"))
         assert_equals('f', interpret("(atom '(a b c))"))
-        assert_equals('t', interpret("(atom '())"))
+        assert_equals('t', interpret("(atom 'nil)"))
         assert_equals('t', interpret("(atom (atom 'a))"))
         assert_equals('f', interpret("(atom '(atom 'a))"))
 
     def test_eq(self):
         assert_equals('t', interpret("(eq 'a 'a)"))
         assert_equals('f', interpret("(eq 'a 'b)"))
-        assert_equals('t', interpret("(eq '() '())"))
+        assert_equals('f', interpret("(eq '(a) '(a))"))
 
     def test_car(self):
         assert_equals('a', interpret("(car '(a b c))"))
@@ -39,7 +39,7 @@ class TestAxioms:
 
     def test_cons(self):
         assert_equals('(a b c)', interpret("(cons 'a '(b c))"))        
-        assert_equals('(a b c)', interpret("(cons 'a (cons 'b  (cons 'c '())))"))
+        assert_equals('(a b c)', interpret("(cons 'a (cons 'b  (cons 'c 'nil)))"))
         assert_equals('a', interpret("(car (cons 'a '(b c)))"))
         assert_equals('(b c)', interpret("(cdr (cons 'a '(b c)))"))
 

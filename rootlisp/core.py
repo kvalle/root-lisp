@@ -30,23 +30,24 @@ def quote(e):
 
 def atom(e, a):
     a = eval(e[1], a)
-    return 't' if a == [] or is_atom(a) else 'f'
+    return 't' if is_atom(a) else 'f'
 
 def eq(e, a):
     a, b = eval(e[1], a), eval(e[2], a)
-    if a == b and (is_atom(a) or a == []):
-        return 't'
-    else:
-        return 'f'
+    return 't' if a == b and is_atom(a) else 'f'
 
 def car(e, a):
     return eval(e[1], a)[0]
 
 def cdr(e, a):
-    return eval(e[1], a)[1:]
+    lst = eval(e[1], a)
+    return 'nil' if len(lst) == 1 else lst[1:]
 
 def cons(e, a):
-    return [eval(e[1], a)] + eval(e[2], a)
+    rest = eval(e[2], a)
+    if rest == 'nil':
+        rest = []
+    return [eval(e[1], a)] + rest
 
 def cond(e, a):
     for p, e in e[1:]:

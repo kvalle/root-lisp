@@ -11,7 +11,7 @@ class TestStdlib:
 
     def test_null(self):
         assert_equals('f', interpret("(null 'a)", self.env))
-        assert_equals('t', interpret("(null '())", self.env))
+        assert_equals('t', interpret("(null 'nil)", self.env))
 
     def test_and(self):
         assert_equals('t', interpret("(and (atom 'a) (eq 'a 'a))", self.env))
@@ -23,7 +23,7 @@ class TestStdlib:
 
     def test_append(self):
         assert_equals('(a b c d)', interpret("(append '(a b) '(c d))", self.env))
-        assert_equals('(c d)', interpret("(append '() '(c d))", self.env))
+        assert_equals('(c d)', interpret("(append 'nil '(c d))", self.env))
 
     def test_pair(self):
         assert_equals('((x a) (y b) (z c))', 
@@ -38,7 +38,7 @@ class TestStdlib:
         assert_equals('a', interpret("(eval 'x '((x a) (y b)))", self.env))
 
     def test_eval_eq(self):
-        assert_equals('t', interpret("(eval '(eq 'a 'a) '())", self.env))
+        assert_equals('t', interpret("(eval '(eq 'a 'a) 'nil)", self.env))
 
     def test_eval_cons(self):
         program = """
@@ -60,7 +60,7 @@ class TestStdlib:
             (eval '((lambda (x y) (cons x (cdr y)))
                     'a
                     '(b c d))
-                  '())
+                  'nil)
         """
         assert_equals('(a c d)', interpret(program, self.env))
 

@@ -7,7 +7,7 @@
 (defun caddar (lst) (car (cdr (cdr (car lst)))))
 
 (defun null (x)
-    (eq x '()))
+    (eq x 'nil))
 
 (defun and (x y)
     (cond (x (cond (y 't) ('t 'f)))
@@ -22,10 +22,10 @@
           ('t (cons (car x) (append (cdr x) y)))))
 
 (defun list (x y)
-  (cons x (cons y '())))
+  (cons x (cons y 'nil)))
 
 (defun pair (x y)
-  (cond ((and (null x) (null y)) '())
+  (cond ((and (null x) (null y)) 'nil)
         ((and (not (atom x)) (not (atom y)))
          (cons (list (car x) (car y))
                (pair (cdr x) (cdr y))))))
@@ -65,6 +65,6 @@
         ('t (evcon (cdr c) a))))
 
 (defun evlis (m a)
-  (cond ((null m) '())
+  (cond ((null m) 'nil)
         ('t (cons (eval  (car m) a)
                   (evlis (cdr m) a)))))
