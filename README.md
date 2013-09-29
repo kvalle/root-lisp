@@ -7,7 +7,7 @@ Root Lisp is a Lisp, as originally described by John McCarthy, implemented in Py
 
 Just like the original this is a small, although neat, language with a lot of bells a whistles missing. It has no side effects (no IO), no types other than atoms (e.g. no numbers, strings, etc), no error handling (programs are expeted to be expressed correctly), and dynamic rather than lexical scoping.
 
-### Differences from McCarthys original
+### Differences from McCarthys description
 
 This language differs from the original Lisp in some minor regards.
 
@@ -15,9 +15,9 @@ This language differs from the original Lisp in some minor regards.
 - Atoms cannot contain spaces, thus elminating the need for dotted pair notations or commas within lists.
 - Quoting can be done using single quote tick (e.g. `'(a quoted list)` instead of `(quote a quoted list)`) in order to improve readability of programs a bit.
 
-In addition, I could not figure out how to define and refer to functions outside of `label` expressions, and thus introduced a `defun` construct like the one described in "The Roots of Lisp". If anyone have inputs on this, I'd be delighted for a message or pull-request on the issue.
+In addition, I could not figure out how to define and refer to functions outside of `label` expressions, and thus introduced a `defun` construct like the one described by Graham. If anyone have inputs on how to do this without introducing a new "axiomatic" form I'd be delighted for a message or pull-request.
 
-The implementation itself also differ a lot, obviously, being written in Python rather than for the [IBM 704](http://en.wikipedia.org/wiki/IBM_704), but I tried to keep the semantic regaring the computational model as close to the original as possible.
+The implementation itself also differ a lot, obviously, being written in Python rather than for the [IBM 704](http://en.wikipedia.org/wiki/IBM_704), but I tried to keep the semantics regarding the computational model as close to the original as possible.
 
 ### What's what?
 
