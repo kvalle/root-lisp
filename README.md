@@ -21,11 +21,21 @@ The implementation itself also differ a lot, obviously, being written in Python 
 
 ### What's what?
 
-The core of the language resides in `rootlisp/core.py` and consists of the `eval` function and some auxillary functions.
+If you want to have a look at the code, here is an overview of what is where. The most interesting file is probably `core.py` where `eval()` is defined.
 
-The parser in `rootlisp/parser.py` handles converting strings into the ASTs used by `eval`.
-
-Finally, `rootlisp/lisp.py` contains a simple REPL and functions for interpreting Lisp strings and files.
+```bash
+root-lisp/
+├── lisp            # the "executable" for starting a REPL or executing a file
+├── README.md
+├── rootlisp
+│   ├── core.py     # the language core, exposing the eval() function
+│   ├── __init__.py
+│   ├── lisp.py     # interpret() and REPL
+│   └── parser.py   # the parser functions, transforming Lisp source to ASTs and back
+├── stdlib.lisp     # implementation of the language within itself
+└── tests
+    └── ...         # the unit tests
+```
 
 ### Play
 
