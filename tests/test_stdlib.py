@@ -17,6 +17,13 @@ class TestStdlib:
         assert_equals('t', interpret("(and (atom 'a) (eq 'a 'a))", self.env))
         assert_equals('f', interpret("(and (atom 'a) (eq 'a 'b))", self.env))
 
+    def test_or(self):
+        assert_equals('t', interpret("(or (atom 'a) (eq 'a 'b))", self.env))
+        assert_equals('t', interpret("(or 't 't)", self.env))
+        assert_equals('t', interpret("(or 'f 't)", self.env))
+        assert_equals('t', interpret("(or 't 'f)", self.env))
+        assert_equals('f', interpret("(or 'f 'f)", self.env))
+
     def test_not(self):
         assert_equals('f', interpret("(not (eq 'a 'a))", self.env))
         assert_equals('t', interpret("(not (eq 'a 'b))", self.env))

@@ -1,77 +1,77 @@
 # -*- coding: utf-8 -*-
 
-def is_atom(e): 
-    return isinstance(e, str)
+def is_atom(exp): 
+    return isinstance(exp, str)
 
-def eval(e, a):
+def eval(exp, env):
     """Function for evaluating the basic axioms"""
-    if is_atom(e): return lookup(e, a)
-    elif is_atom(e[0]):
-        if e[0] == "quote": return quote(e)
-        elif e[0] == "atom": return atom(e, a)
-        elif e[0] == "eq": return eq(e, a)
-        elif e[0] == "car": return car(e, a)
-        elif e[0] == "cdr": return cdr(e, a)
-        elif e[0] == "cons": return cons(e, a)
-        elif e[0] == "cond": return cond(e, a)
-        elif e[0] == "defun": return defun(e, a)
-        else: return call_named_fn(e, a)
-    elif e[0][0] == "lambda": return apply(e, a)
-    elif e[0][0] == "label": return label(e, a)
+    if is_atom(exp): return lookup(exp, env)
+    elif is_atom(exp[0]):
+        if exp[0] == "quote": return quote(exp)
+        elif exp[0] == "atom": return atom(exp, env)
+        elif exp[0] == "eq": return eq(exp, env)
+        elif exp[0] == "car": return car(exp, env)
+        elif exp[0] == "cdr": return cdr(exp, env)
+        elif exp[0] == "cons": return cons(exp, env)
+        elif exp[0] == "cond": return cond(exp, env)
+        elif exp[0] == "defun": return defun(exp, env)
+        else: return call_named_fn(exp, env)
+    elif exp[0][0] == "lambda": return apply(exp, env)
+    elif exp[0][0] == "label": return label(exp, env)
 
-def lookup(e, a):
-    for x, value in a:
-        if x == e:
+def lookup(atom, env):
+    for x, value in env:
+        if x == atom:
             return value
-    raise LookupError("%s is unbound" % e)
+    raise LookupError("%s is unbound" % atom)
 
-def quote(e):
-    return e[1]
+def quote(exp):
+    return exp[1]
 
-def atom(e, a):
-    val = eval(e[1], a)
+def atom(exp, env):
+    val = eval(exp[1], env)
     return 't' if is_atom(val) else 'f'
 
-def eq(e, a):
-    v1, v2 = eval(e[1], a), eval(e[2], a)
+def eq(exp, env):
+    v1, v2 = eval(exp[1], env), eval(exp[2], env)
     return 't' if v1 == v2 and is_atom(v1) else 'f'
 
-def car(e, a):
-    return eval(e[1], a)[0]
+def car(exp, env):
+    return eval(exp[1], env)[0]
 
-def cdr(e, a):
-    lst = eval(e[1], a)
+def cdr(exp, env):
+    lst = eval(exp[1], env)
     return 'nil' if len(lst) == 1 else lst[1:]
 
-def cons(e, a):
-    rest = eval(e[2], a)
+def cons(exp, env):
+    rest = eval(exp[2], env)
     if rest == 'nil':
         rest = []
-    return [eval(e[1], a)] + rest
+    return [eval(exp[1], env)] + rest
 
-def cond(e, a):
-    for p, e in e[1:]:
-        if eval(p, a) == 't':
-            return eval(e, a)
+def cond(exp, env):
+    for p, e in exp[1:]:
+        if eval(p, env) == 't':
+            return eval(e, env)
 
-def defun(e, a):
-    name, params, body = e[1], e[2], e[3]
+def defun(exp, env):
+    name, params, body = exp[1], exp[2], exp[3]
     label = ["label", name, ["lambda", params, body]]
-    a.insert(0, (name, label))
+    env.insert(0, (name, label))
     return name
 
-def call_named_fn(e, a):
-    fn = lookup(e[0], a)
-    return eval([fn] + e[1:], a)
+def call_named_fn(exp, env):
+    fn = lookup(exp[0], env)
+    return eval([fn] + exp[1:], env)
 
-def label(e, a):
-    _, f, fn = e[0]
-    args = e[1:]
-    return eval([fn] + args, [(f, e[0])] + a)
+def label(exp, env):
+    _, f, fn = exp[0]
+    args = exp[1:]
+    return eval([fn] + args, [(f, exp[0])] + env)
 
-def apply(e, a):
-    fn, args = e[0], e[1:]
+def apply(exp, env):
+    fn, args = exp[0], exp[1:]
     _, params, body = fn
-    evaluated_args = map(lambda e: eval(e, a), args)
-    a = zip(params, evaluated_args) + a
-    return eval(body, a)
+    evaluated_args = map(lambda e: eval(e, env), args)
+    new_env = zip(params, evaluated_args) + env
+    return eval(body, new_env)
